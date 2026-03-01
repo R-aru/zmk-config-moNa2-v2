@@ -63,19 +63,37 @@
 };
 
 
+/* zip_temp_layer の動作を詳細設定 */
+&zip_temp_layer {
+    /* タイムアウトを 500ms〜1000ms 程度に短縮するのが実用的です */
+    temp-layer-timeout-ms = <800>; 
+
+    /* J, K, L キーポジションを除外（Mona2のレイアウトに基づく） */
+    excluded-positions = <
+        17 // J
+        18 // K
+        19 // L
+        29 // M
+        31 // .
+    >;
+};
+
 // Overrides for the input listener node
 &trackball_central_listener {
     status = "okay";
     device = <&trackball_central>;
+    
+    /* 第2引数を「0」に設定すると、
+       上記の &zip_temp_layer で定義した 800ms が適用されます。
+    */
+    input-processors = <&zip_temp_layer MOUSE 0>;
 
     scroller {
-        layers = <3>;
+        layers = <SCROLL>;
         input-processors = 
-            // <&zip_xy_transform INPUT_TRANSFORM_XY_SWAP>,        //X軸とY軸の入れ替え
-            <&zip_xy_transform INPUT_TRANSFORM_X_INVERT>,       //X軸反転
-            <&zip_xy_to_scroll_mapper>,                         //スクロールモードに変更
-            <&zip_scroll_transform INPUT_TRANSFORM_X_INVERT>,   //スクロールのX軸反転
-            <&zip_scroll_scaler 1 5>;                           //スクロール量を1/4倍
+            <&zip_xy_transform INPUT_TRANSFORM_X_INVERT>,
+            <&zip_xy_to_scroll_mapper>,
+            <&zip_scroll_transform INPUT_TRANSFORM_X_INVERT>,
+            <&zip_scroll_scaler 1 5>;
     };
-
 };
